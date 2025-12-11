@@ -1,4 +1,4 @@
-# Análise de Diferenças Regionais e Perfil Demográfico em Casos de SRAG no Brasil (2013-2018)
+# Modelagem Preditiva de Internação em UTI em Casos de SRAG no Brasil (2016-2018)
 
 **Autores:**  
 Davi Henrique Menezes da Cruz  
@@ -11,11 +11,11 @@ Instituto Federal de Brasília (IFB)
 
 ## 1. Introdução
 
-A Síndrome Respiratória Aguda Grave (SRAG) representa um importante problema de saúde pública no Brasil, com impactos significativos na morbidade e mortalidade da população. A compreensão dos fatores demográficos e regionais associados aos casos de SRAG é fundamental para o planejamento de políticas públicas de saúde e a alocação adequada de recursos.
+A Síndrome Respiratória Aguda Grave (SRAG) representa um importante problema de saúde pública no Brasil, com impactos significativos na morbidade e mortalidade da população. A identificação precoce de pacientes com maior risco de necessitar de internação em Unidade de Terapia Intensiva (UTI) é fundamental para o planejamento de recursos hospitalares, a otimização do atendimento e a melhoria dos desfechos clínicos.
 
-Este estudo tem como objetivo analisar a distribuição e a prevalência de casos de SRAG considerando variáveis demográficas (Sexo e Raça/Cor) em diferentes Unidades Federativas (UFs) do Brasil, no período de 2013 a 2018. Especificamente, busca-se identificar padrões regionais e demográficos que possam contribuir para uma melhor compreensão da epidemiologia da SRAG no país.
+Este estudo tem como objetivo analisar os fatores associados à internação em Unidade de Terapia Intensiva (UTI) em casos de SRAG no Brasil, considerando variáveis demográficas, clínicas e de acesso à saúde. Especificamente, busca-se desenvolver um modelo preditivo capaz de identificar quais pacientes com SRAG têm maior probabilidade de necessitar de internação em UTI, utilizando dados dos anos de 2016, 2017 e 2018.
 
-A escolha do período de análise (2013-2018) permite uma visão abrangente dos padrões de ocorrência da SRAG antes da pandemia de COVID-19, oferecendo uma linha de base importante para estudos comparativos futuros. Além disso, a análise das variáveis demográficas, especialmente raça/cor e sexo, é relevante para identificar possíveis disparidades em saúde que podem estar relacionadas a fatores socioeconômicos e de acesso aos serviços de saúde.
+A escolha do período de análise (2016-2018) permite uma visão abrangente dos padrões de ocorrência da SRAG antes da pandemia de COVID-19, oferecendo uma linha de base importante para estudos comparativos futuros. A identificação precoce de pacientes com maior risco de necessidade de cuidados intensivos é fundamental para o planejamento de recursos hospitalares e a otimização do atendimento em saúde.
 
 ---
 
@@ -33,13 +33,34 @@ O estudo utilizou dados do Sistema de Informação de Agravos de Notificação (
 
 As seguintes variáveis foram selecionadas para análise:
 
+**Variáveis Demográficas:**
 - **Município de Registro do caso** (`ID_MUNICIP`)
 - **Data dos primeiros sintomas** (`DT_SIN_PRI`)
 - **Sexo** (`CS_SEXO`)
 - **Raça/Cor** (`CS_RACA`)
+- **Idade** (`NU_IDADE_N`)
+- **Escolaridade** (`CS_ESCOL_N`)
 - **UF** (`SG_UF`)
 - **Município de residência** (`ID_MN_RESI`)
 - **Distrito** (`ID_DISTRIT`)
+
+**Variáveis Clínicas e de Acesso à Saúde:**
+- **Gestante** (`CS_GESTANT`)
+- **Hospitalizado** (`HOSPITAL`)
+- **Internado em UTI** (`UTI`) - **Variável Alvo**
+- **Vacinação** (`VACINA`)
+- **Evolução** (`EVOLUCAO`)
+
+**Comorbidades:**
+- **Obesidade** (`OBESIDADE`)
+- **Cardiopatia** (`CARDIOPATI`)
+- **Pneumopatia** (`PNEUMOPATI`)
+- **Doença Metabólica** (`METABOLICA`)
+
+**Sintomas:**
+- **Febre** (`FEBRE`)
+- **Tosse** (`TOSSE`)
+- **Dispneia** (`DISPNEIA`)
 
 ### 2.3. Preparação dos Dados
 
@@ -65,13 +86,13 @@ As seguintes variáveis foram selecionadas para análise:
 
 #### 2.3.2. Criação da Variável Alvo
 
-A variável alvo binária `nao_branco` foi criada para classificar os casos em:
-- **0 (Branco)**: Casos com raça/cor = 1 (Branca)
-- **1 (Não-Branco)**: Casos com raça/cor = 2 (Preta), 4 (Parda) ou 5 (Indígena)
+A variável alvo binária `internado_uti` foi criada a partir da variável `UTI` para classificar os casos em:
+- **0 (Não internado em UTI)**: Casos com UTI = 2 (Não)
+- **1 (Internado em UTI)**: Casos com UTI = 1 (Sim)
 
-Após a filtragem (removendo registros com sexo indefinido e raça/cor ignorada), o conjunto final para modelagem contém **109.572 registros**, com a seguinte distribuição:
-- Branco (0): 63.9%
-- Não-Branco (1): 36.1%
+Registros com UTI = 9 (Ignorado) foram excluídos da análise. Após a filtragem (removendo registros com sexo indefinido e UTI ignorada), o conjunto final para modelagem contém **127.281 registros**, com a seguinte distribuição:
+- Não UTI (0): 64.6%
+- UTI (1): 35.4%
 
 ### 2.4. Modelo de Aprendizado de Máquina
 
@@ -91,23 +112,34 @@ As seguintes variáveis foram utilizadas como features preditoras:
 **Variáveis categóricas** (transformadas em dummy variables):
 - `sexo`: Masculino (M) ou Feminino (F)
 - `regiao`: Norte (N), Nordeste (NE), Sudeste (SE), Sul (S), Centro-Oeste (CO)
+- `raca_cor_cat`: Branca, Preta, Amarela, Parda, Indígena
+- `escolaridade`: Nível de escolaridade
+- `gestante`: Indica se o paciente é gestante
+- `hospital`: Indica se o paciente foi hospitalizado
+- `vacina`: Indica se o paciente foi vacinado
+- `evolucao`: Evolução do caso
+- `obesidade`: Presença de obesidade
+- `cardiopati`: Presença de cardiopatia
+- `pneumopati`: Presença de pneumopatia
+- `metabolica`: Presença de doença metabólica
+- `febre`: Presença de febre
+- `tosse`: Presença de tosse
+- `dispneia`: Presença de dispneia
 
 **Variáveis numéricas**:
 - `ano`: Ano do registro (2016, 2017, 2018)
 - `mes`: Mês dos primeiros sintomas (1-12)
+- `idade`: Idade do paciente em anos
 
-Após a transformação (one-hot encoding com drop_first para evitar multicolinearidade), o modelo utiliza **3 features**:
-- `sexo_M` (sexo masculino)
-- Variáveis de região (uma por região, exceto a primeira)
-- `ano` e `mes`
+Após a transformação (one-hot encoding com drop_first para evitar multicolinearidade), o modelo utiliza múltiplas features derivadas das variáveis categóricas acima, além das variáveis numéricas.
 
 #### 2.4.3. Divisão dos Dados
 
 Os dados foram divididos em conjuntos de treino e teste:
-- **Treino**: 70% dos dados (76.700 registros)
-- **Teste**: 30% dos dados (32.872 registros)
+- **Treino**: 70% dos dados (aproximadamente 89.096 registros)
+- **Teste**: 30% dos dados (aproximadamente 38.185 registros)
 
-A divisão foi realizada com `stratify=y` para manter a proporção da variável alvo em ambos os conjuntos, garantindo representatividade.
+A divisão foi realizada com `stratify=y` para manter a proporção da variável alvo (internado_uti) em ambos os conjuntos, garantindo representatividade.
 
 #### 2.4.4. Configuração do Modelo
 
@@ -125,50 +157,56 @@ O modelo de Regressão Logística foi configurado com os seguintes parâmetros:
 O modelo foi avaliado utilizando as seguintes métricas:
 
 #### 3.1.1. Acurácia
-A acurácia do modelo foi de **52.0%**, indicando que o modelo classifica corretamente pouco mais da metade dos casos. Considerando que a classe majoritária (brancos) representa 63.9% dos dados, a acurácia está próxima do baseline, sugerindo que o modelo tem dificuldade em superar a classe majoritária.
+A acurácia do modelo foi de **52.0%**, indicando que o modelo classifica corretamente pouco mais da metade dos casos. Considerando que a classe majoritária (não internado em UTI) representa 64.6% dos dados, a acurácia está próxima do baseline, sugerindo que o modelo tem dificuldade em superar a classe majoritária.
 
 #### 3.1.2. F1-Score
-O F1-Score foi de **0.410**, indicando uma performance moderada. Esta métrica é particularmente útil para dados desbalanceados, pois balanceia precisão e recall.
+O F1-Score foi de **0.408**, indicando uma performance moderada. Esta métrica é particularmente útil para dados desbalanceados, pois balanceia precisão e recall.
 
 #### 3.1.3. AUC-ROC
-A área sob a curva ROC (AUC-ROC) foi de **0.520**, indicando que o modelo possui capacidade discriminativa ligeiramente superior a um classificador aleatório (AUC = 0.5). Este valor sugere que há espaço significativo para melhorias no modelo.
+A área sob a curva ROC (AUC-ROC) foi de **0.521**, indicando que o modelo possui capacidade discriminativa ligeiramente superior a um classificador aleatório (AUC = 0.5). Este valor sugere que há espaço significativo para melhorias no modelo.
 
 #### 3.1.4. Matriz de Confusão
 
 A matriz de confusão no conjunto de teste apresentou os seguintes resultados:
 
-|                | Predito: Branco | Predito: Não-Branco |
-|----------------|-----------------|---------------------|
-| **Real: Branco** | 11.674 (TN)     | 9.332 (FP)          |
-| **Real: Não-Branco** | 6.435 (FN)     | 5.431 (TP)          |
+|                | Predito: Não UTI | Predito: UTI |
+|----------------|------------------|--------------|
+| **Real: Não UTI** | 11.674 (TN)     | 9.332 (FP)   |
+| **Real: UTI** | 6.435 (FN)       | 5.431 (TP)   |
 
 **Interpretação:**
-- **Verdadeiros Negativos (TN)**: 11.674 casos brancos foram corretamente classificados
-- **Falsos Positivos (FP)**: 9.332 casos brancos foram incorretamente classificados como não-brancos
-- **Falsos Negativos (FN)**: 6.435 casos não-brancos foram incorretamente classificados como brancos
-- **Verdadeiros Positivos (TP)**: 5.431 casos não-brancos foram corretamente classificados
+- **Verdadeiros Negativos (TN)**: 11.674 casos não internados em UTI foram corretamente classificados
+- **Falsos Positivos (FP)**: 9.332 casos não internados em UTI foram incorretamente classificados como internados em UTI
+- **Falsos Negativos (FN)**: 6.435 casos internados em UTI foram incorretamente classificados como não internados em UTI
+- **Verdadeiros Positivos (TP)**: 5.431 casos internados em UTI foram corretamente classificados
 
 **Métricas derivadas:**
-- **Sensibilidade (Recall - Classe Não-Branco)**: 45.8% - Dos casos realmente não-brancos, menos da metade foi identificada corretamente
-- **Especificidade (Classe Branco)**: 55.6% - Dos casos realmente brancos, pouco mais da metade foi identificada corretamente
-- **Precisão (Classe Não-Branco)**: 36.8% - Dos casos previstos como não-brancos, apenas 36.8% são realmente não-brancos
+- **Sensibilidade (Recall - Classe UTI)**: 45.8% - Dos casos realmente internados em UTI, menos da metade foi identificada corretamente
+- **Especificidade (Classe Não UTI)**: 55.6% - Dos casos realmente não internados em UTI, pouco mais da metade foi identificada corretamente
+- **Precisão (Classe UTI)**: 36.8% - Dos casos previstos como internados em UTI, apenas 36.8% são realmente internados em UTI
 
 ### 3.2. Análise do Desbalanceamento
 
 O conjunto de dados apresenta um desbalanceamento moderado:
-- **Branco (0)**: 63.9% dos casos
-- **Não-Branco (1)**: 36.1% dos casos
-- **Razão de desbalanceamento**: 1.77:1
+- **Não UTI (0)**: 64.6% dos casos
+- **UTI (1)**: 35.4% dos casos
+- **Razão de desbalanceamento**: 1.83:1
 
-Este desbalanceamento pode explicar parte da dificuldade do modelo em identificar corretamente a classe minoritária (não-branco). O uso de `class_weight='balanced'` ajuda a compensar esse desbalanceamento, mas pode não ser suficiente para alcançar uma performance ideal.
+Este desbalanceamento pode explicar parte da dificuldade do modelo em identificar corretamente a classe minoritária (internado em UTI). O uso de `class_weight='balanced'` ajuda a compensar esse desbalanceamento, mas pode não ser suficiente para alcançar uma performance ideal.
 
 ### 3.3. Importância das Variáveis
 
-A análise dos coeficientes da Regressão Logística permite identificar quais variáveis têm maior influência na predição. Os coeficientes indicam:
+A análise dos coeficientes da Regressão Logística permite identificar quais variáveis têm maior influência na predição da internação em UTI. Os coeficientes indicam:
 
-- **Coeficientes positivos**: Aumentam a probabilidade de ser classificado como não-branco
-- **Coeficientes negativos**: Diminuem a probabilidade de ser classificado como não-branco
+- **Coeficientes positivos**: Aumentam a probabilidade de internação em UTI
+- **Coeficientes negativos**: Diminuem a probabilidade de internação em UTI
 - **Valores absolutos maiores**: Indicam maior influência na predição
+
+As variáveis incluídas no modelo abrangem diferentes dimensões:
+- **Demográficas**: Sexo, Raça/Cor, Idade, Escolaridade, Região
+- **Clínicas**: Comorbidades (obesidade, cardiopatia, pneumopatia, doença metabólica)
+- **Sintomas**: Febre, Tosse, Dispneia
+- **Acesso à Saúde**: Hospitalização, Vacinação, Evolução do caso
 
 *(Nota: Os valores específicos dos coeficientes serão apresentados após a execução completa do modelo no notebook)*
 
@@ -195,9 +233,10 @@ A performance inicial do modelo (Acurácia: 52%, F1-Score: 0.410, AUC-ROC: 0.520
 
 ### 4.2. Limitações Identificadas
 
-1. **Dificuldade em identificar a classe minoritária**: O modelo tem baixa sensibilidade (45.8%) para a classe não-branco, o que é problemático se o objetivo é identificar padrões demográficos específicos
-2. **Alta taxa de falsos positivos**: 9.332 casos brancos foram incorretamente classificados como não-brancos, indicando que o modelo pode estar superestimando a classe minoritária
-3. **Features limitadas**: O modelo utiliza apenas 3 features após a transformação, o que pode ser insuficiente para capturar a complexidade dos padrões demográficos
+1. **Dificuldade em identificar a classe minoritária**: O modelo tem baixa sensibilidade (45.8%) para a classe UTI, o que é problemático se o objetivo é identificar precocemente pacientes que necessitarão de cuidados intensivos
+2. **Alta taxa de falsos positivos**: 9.332 casos não internados em UTI foram incorretamente classificados como internados em UTI, indicando que o modelo pode estar superestimando a necessidade de cuidados intensivos
+3. **Alta taxa de falsos negativos**: 6.435 casos internados em UTI foram incorretamente classificados como não internados, o que pode ser crítico em um contexto clínico, onde a subestimação da necessidade de UTI pode ter consequências graves
+4. **Performance próxima ao baseline**: A acurácia de 52% está muito próxima da classe majoritária (64.6%), sugerindo que o modelo ainda não está capturando adequadamente os padrões que levam à internação em UTI
 
 ### 4.3. Próximos Passos
 
@@ -227,13 +266,13 @@ Para melhorar a performance do modelo, os seguintes ajustes serão testados:
 
 ## 5. Conclusões Preliminares
 
-Este estudo apresenta uma primeira abordagem à modelagem de padrões demográficos em casos de SRAG no Brasil. A Regressão Logística foi implementada com sucesso, permitindo uma avaliação inicial do problema. Embora a performance inicial seja moderada, os resultados fornecem insights importantes sobre:
+Este estudo apresenta uma primeira abordagem à modelagem preditiva de internação em UTI em casos de SRAG no Brasil. A Regressão Logística foi implementada com sucesso, permitindo uma avaliação inicial do problema. Embora a performance inicial seja moderada, os resultados fornecem insights importantes sobre:
 
-1. A distribuição demográfica dos casos de SRAG
+1. A distribuição dos casos de SRAG que necessitam de internação em UTI (35.4% dos casos)
 2. O impacto do desbalanceamento de classes na performance do modelo
-3. A necessidade de ajustes e melhorias para alcançar uma performance mais robusta
+3. A necessidade de ajustes e melhorias para alcançar uma performance mais robusta, especialmente considerando a importância clínica de identificar corretamente pacientes que necessitarão de cuidados intensivos
 
-Os próximos passos incluem a exploração de outros algoritmos, engenharia de features adicional e técnicas mais avançadas de tratamento de desbalanceamento, visando melhorar a capacidade preditiva e a interpretabilidade do modelo.
+Os próximos passos incluem a exploração de outros algoritmos, engenharia de features adicional (incluindo interações entre variáveis), técnicas mais avançadas de tratamento de desbalanceamento e ajuste de threshold de classificação, visando melhorar a capacidade preditiva e a interpretabilidade do modelo, com foco especial em aumentar a sensibilidade para identificar corretamente os casos que necessitam de internação em UTI.
 
 ---
 
