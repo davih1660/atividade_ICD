@@ -16,7 +16,7 @@ internação em **Unidade de Terapia Intensiva (UTI)** em pacientes com
 
 O foco é avaliar o impacto de fatores **demográficos, clínicos e regionais**
 (sexo, raça/cor, idade, comorbidades e UF) sobre a necessidade de cuidados
-intensivos. 6  
+intensivos.
 
 ## Dados
 
@@ -36,7 +36,7 @@ via `gdown`.
 1. **Coleta e unificação das bases (2016–2018)**  
 2. **Seleção de variáveis** demográficas, clínicas e regionais  
 3. **Limpeza de dados**  
-   - Tratamento de `NaN` e código 9 = “Ignorado”  
+   - Tratamento de `NaN` e código 9 = "Ignorado"  
    - Conversão de datas e criação de variáveis temporais  
 4. **Criação da variável-alvo `UTI_BINARIO`**  
 5. **Codificação one-hot** de variáveis categóricas  
@@ -44,7 +44,7 @@ via `gdown`.
 7. **Modelo principal:** Regressão Logística  
 8. **Avaliação inicial (limiar 0,5)**  
 9. **Teste com SMOTE** para balanceamento das classes  
-10. **Ajuste de limiar para 0,3**, priorizando Recall (sensibilidade) 8  
+10. **Ajuste de limiar para 0,3**, priorizando Recall (sensibilidade)
 
 ## Resultados principais
 
@@ -60,7 +60,7 @@ Após ajuste do limiar para **0,3**:
 
 Em contexto de saúde pública, a prioridade é **minimizar falsos negativos**
 (pacientes graves não identificados), portanto optou-se pelo modelo com
-maior sensibilidade, mesmo com aumento de falsos positivos. 9  
+maior sensibilidade, mesmo com aumento de falsos positivos.
 
 ## Como executar
 
@@ -90,14 +90,16 @@ O notebook realiza o download automático dos dados necessários via `gdown`.
 3. Abra o notebook:
 
    ```bash
-   jupyter notebook notebooks/Trabalho_ICD_SRAG_UTI.ipynb
+   jupyter notebook notebooks/Trabalho_ICD_ajustado_sabrinaEdavi.ipynb
    ```
 
    Ou se preferir usar o JupyterLab:
 
    ```bash
-   jupyter lab notebooks/Trabalho_ICD_SRAG_UTI.ipynb
+   jupyter lab notebooks/Trabalho_ICD_ajustado_sabrinaEdavi.ipynb
    ```
+
+   **Nota:** Os arquivos CSV originais não estão incluídos no repositório. O notebook realiza o download automático via `gdown` quando executado.
 
 ## Estrutura do Projeto
 
@@ -105,15 +107,17 @@ O notebook realiza o download automático dos dados necessários via `gdown`.
 icd-srag-uti-davi-sabrina/
 ├── README.md
 ├── requirements.txt
+├── .gitignore
 ├── notebooks/
-│   └── Trabalho_ICD_SRAG_UTI.ipynb
-├── src/
-├── data/
-├── relatorios/
-│   ├── ProjetoFinal_ICD_Davi_Sabrina.pdf
-│   └── slides_apresentacao.pdf
-└── figuras/
+│   └── Trabalho_ICD_ajustado_sabrinaEdavi.ipynb
+├── documentos/
+│   └── ProjetoFinal_Artigo.pdf
+├── data/                    # Dados CSV (não versionados)
+├── figuras/                 # Visualizações exportadas
+└── src/                     # Código fonte adicional (se necessário)
 ```
+
+**Observação:** Os arquivos CSV em `data/` não são versionados no repositório devido ao tamanho. O notebook realiza o download automático quando necessário.
 
 ## Links Importantes
 
