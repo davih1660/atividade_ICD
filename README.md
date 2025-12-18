@@ -64,8 +64,63 @@ maior sensibilidade, mesmo com aumento de falsos positivos. 9
 
 ## Como executar
 
+### Opção 1: Executar no Google Colab (Recomendado)
+
+O notebook principal está disponível no Google Colab e pode ser executado diretamente:
+
+🔗 **[Abrir no Google Colab](https://colab.research.google.com/drive/1rrep2ONRaZIT2fE197b7OBXz-phaDD8t?usp=sharing)**
+
+O notebook realiza o download automático dos dados necessários via `gdown`.
+
+### Opção 2: Executar localmente
+
 1. Clone o repositório:
 
    ```bash
    git clone https://github.com/davih1660/icd-srag-uti-davi-sabrina.git
    cd icd-srag-uti-davi-sabrina
+   ```
+
+2. Instale as dependências:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. Abra o notebook:
+
+   ```bash
+   jupyter notebook notebooks/Trabalho_ICD_SRAG_UTI.ipynb
+   ```
+
+   Ou se preferir usar o JupyterLab:
+
+   ```bash
+   jupyter lab notebooks/Trabalho_ICD_SRAG_UTI.ipynb
+   ```
+
+## Estrutura do Projeto
+
+```
+icd-srag-uti-davi-sabrina/
+├── README.md
+├── requirements.txt
+├── notebooks/
+│   └── Trabalho_ICD_SRAG_UTI.ipynb
+├── src/
+├── data/
+├── relatorios/
+│   ├── ProjetoFinal_ICD_Davi_Sabrina.pdf
+│   └── slides_apresentacao.pdf
+└── figuras/
+```
+
+## Links Importantes
+
+- 📁 **Repositório GitHub**: [https://github.com/davih1660/icd-srag-uti-davi-sabrina.git](https://github.com/davih1660/icd-srag-uti-davi-sabrina.git)
+- 📓 **Notebook no Colab**: [https://colab.research.google.com/drive/1rrep2ONRaZIT2fE197b7OBXz-phaDD8t?usp=sharing](https://colab.research.google.com/drive/1rrep2ONRaZIT2fE197b7OBXz-phaDD8t?usp=sharing)
+- 🎥 **Vídeo de Apresentação**: [https://drive.google.com/file/d/1fJdmW-6ihQ6T8imjdMsltCDMqeRon37s/view?usp=sharing](https://drive.google.com/file/d/1fJdmW-6ihQ6T8imjdMsltCDMqeRon37s/view?usp=sharing)
+
+## Licença
+
+Este projeto foi desenvolvido para fins acadêmicos no contexto da disciplina de Introdução à Ciência de Dados (ICD) do IFB – Campus Brasília.

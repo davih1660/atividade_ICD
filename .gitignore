@@ -1,5 +1,6 @@
-# Arquivos de dados grandes (opcional - descomente se não quiser versionar)
-# *.csv
+# Arquivos de dados grandes
+*.csv
+data/*.csv
 
 # Python
 __pycache__/
